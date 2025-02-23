@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  backend:
+    pull_policy: build
+    build:
+      context: /home/amineh/WorkSpace/hn_tracker/backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - RUST_LOG=info
+
+  frontend:
+    pull_policy: build
+    build:
+      context: /home/amineh/WorkSpace/hn_tracker/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+networks:
+  default:
+    driver: bridge 
