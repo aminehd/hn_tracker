@@ -4,7 +4,7 @@ services:
   backend:
     pull_policy: build
     build:
-      context: /home/amineh/WorkSpace/hn_tracker/backend
+      context: /root/hn_tracker/backend
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
@@ -14,7 +14,7 @@ services:
   frontend:
     pull_policy: build
     build:
-      context: /home/amineh/WorkSpace/hn_tracker/frontend
+      context: /root/hn_tracker/frontend
       dockerfile: Dockerfile
     ports:
       - "80:80"
