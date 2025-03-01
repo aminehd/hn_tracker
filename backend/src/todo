@@ -1,0 +1,5 @@
+[] How do I make my function to get 1 hour data and every hour repeat it
+[] Not only that, the way I push on kafka
+[] then kafka lates get everything on kafka
+
+{"hour":"2025-02-25T00:00:00Z","stories":[{"title":"Prism – One Card, Endless Rewards","url":"https://useprism.xyz","author":"HarryET","score":3,"comments":3,"domain":"useprism.xyz"},{"title":"Everyone at NSF overseeing the Platforms for Wireless Experimentation is gone","url":"https://discuss.systems/@ricci/114059690609284323","author":"luu","score":281,"comments":277,"domain":"discuss.systems"}],"avg_score":142.0,"total_comments":280,"top_authors":[["luu",1],["HarryET",1]],"domains":[["useprism.xyz",1],["discuss.systems",1]]}% 
