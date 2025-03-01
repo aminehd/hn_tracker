@@ -1,0 +1,54 @@
+# Git
+.git
+.gitignore
+.github
+
+# Node.js (Frontend)
+**/node_modules
+**/npm-debug.log
+**/yarn-debug.log
+**/yarn-error.log
+**/dist
+**/.env
+**/.env.local
+**/.env.development
+**/.env.test
+**/.env.production
+
+# Rust (Backend)
+**/target
+**/Cargo.lock
+**/*.rs.bk
+**/.rustc_info.json
+
+# Editor directories and files
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+**/Dockerfile
+**/docker-compose.yml
+**/docker-compose.yaml
+
+# Testing
+**/coverage
+**/__tests__
+**/*.test.js
+**/*.spec.js
+
+# Logs
+**/logs
+**/*.log
+
+# Documentation
+**/README.md
+**/LICENSE
+**/docs

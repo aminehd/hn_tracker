@@ -50,7 +50,7 @@ function App() {
   const [historicalData, setHistoricalData] = useState<HistoricalData | null>(null);
   const [sourceCounts, setSourceCounts] = useState<[string, number][]>([]);
 
-  const API_BASE = 'http://100.69.8.70:3000';
+  const API_BASE = '';
 
   // Fetch latest data only
   const fetchLatestData = async () => {
