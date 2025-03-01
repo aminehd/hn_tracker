@@ -474,7 +474,7 @@ async fn run_updates(state: AppState) {
                             .key(&key);
                         match state_data
                             .kafka_producer
-                            .send(record, Timeout::After(Duration::from_secs(5)))
+                            .send(record, Timeout::After(Duration::from_secs(25)))
                             .await
                         {
                             Ok(_) => info!("Successfully sent to Kafka"),

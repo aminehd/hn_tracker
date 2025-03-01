@@ -4,7 +4,7 @@ services:
   backend:
     pull_policy: build
     build:
-      context: /home/amineh/WorkSpace/hn_tracker/backend
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
@@ -19,7 +19,7 @@ services:
   frontend:
     pull_policy: build
     build:
-      context: /home/amineh/WorkSpace/hn_tracker/frontend
+      context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "80:80"
@@ -73,5 +73,4 @@ networks:
   kafka-net:
     driver: bridge
   default:
-    driver: bridge 
-
+    driver: bridge

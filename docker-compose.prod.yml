@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  backend:
+    pull_policy: build
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hn_backend
+    hostname: backend
+    ports:
+      - "3000:3000"
+    environment:
+      - RUST_LOG=info
+      # Try multiple ways to connect to Kafka to handle DNS resolution issues
+      - KAFKA_BROKER=hn_kafka:9092
+    dns:
+      - 127.0.0.11  # Docker's built-in DNS server
+    depends_on:
+      - kafka
+    networks:
+      - kafka-net
+
+  frontend:
+    pull_policy: build
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hn_frontend
+    hostname: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - kafka-net
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: hn_zookeeper
+    hostname: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    healthcheck:
+      test: echo stat | nc localhost 2181 || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+    networks:
+      - kafka-net
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: hn_kafka
+    hostname: kafka
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "9092:9092"
+      - "9094:9094"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # Define internal and external listeners
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:9094
+      # Use explicit container hostname instead of service name
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://hn_kafka:9092,EXTERNAL://${DROPLET_IP}:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      # Simplified health check command
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 10s
+      timeout: 20s
+      retries: 10
+      start_period: 30s
+    networks:
+      kafka-net:
+        aliases:
+          - kafka.local
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: hn_kafka_ui
+    hostname: kafka-ui
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: production
+      # Use explicit container name instead of service name
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: hn_kafka:9092,${DROPLET_IP}:9094
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    depends_on:
+      - kafka
+    networks:
+      - kafka-net
+
+networks:
+  kafka-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16  # Fixed subnet for more predictable IP addressing
+  default:
+    driver: bridge
