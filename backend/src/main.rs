@@ -216,22 +216,20 @@ async fn get_all_kafka_messages() -> Result<Vec<HourlyData>, AppError> {
     info!("Creating Kafka consumer");
     let consumer: StreamConsumer = ClientConfig::new()
         .set("bootstrap.servers", "kafka:9092")
-        .set("group.id", "history-reader-group") // Use a different consumer group
-        .set("auto.offset.reset", "earliest") // Read from the beginning
-        .set("enable.auto.commit", "false") // Disable auto commit to keep messages
-        .set("session.timeout.ms", "6000")
-        .set("heartbeat.interval.ms", "2000")
+        .set("group.id", "history-reader-group")
+        .set("session.timeout.ms", "45000")
+        .set("heartbeat.interval.ms", "15000")
+        .set("max.poll.interval.ms", "300000")
+        .set("auto.offset.reset", "earliest")
+        .set("enable.auto.commit", "true")
+        .set("auto.commit.interval.ms", "5000")
+        .set("socket.keepalive.enable", "true")
         .create()
-        .map_err(|e| {
-            error!("Failed to create Kafka consumer: {}", e);
-            AppError::KafkaError(e.to_string())
-        })?;
+        .expect("Failed to create consumer");
 
     info!("Subscribing to hn-updates topic");
-    consumer.subscribe(&["hn-updates"]).map_err(|e| {
-        error!("Failed to subscribe to topic: {}", e);
-        AppError::KafkaError(e.to_string())
-    })?;
+    consumer.subscribe(&["hn-updates"])
+        .expect("Failed to subscribe to topic");
 
     let mut all_hourly_data = Vec::new();
     let mut timeout_count = 0;
