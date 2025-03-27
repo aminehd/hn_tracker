@@ -1,0 +1,65 @@
+version: '3'
+services:
+  backend:
+    pull_policy: build
+    build:
+      # context: /home/amineh/WorkSpace/hn_tracker/frontend
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hn_backend
+    hostname: backend
+    ports:
+      - "3000:3000"
+    environment:
+      - RUST_LOG=info
+      # Try multiple ways to connect to Kafka to handle DNS resolution issues
+      - KAFKA_BROKER=minima:9092
+    dns:
+      - 8.8.8.8  # Google's public DNS
+      - 8.8.4.4  # Google's secondary public DNS
+      - 127.0.0.11  # Docker's built-in DNS server
+    depends_on:
+      - kafka
+    networks:
+      - kafka-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: on-failure
+  zookeeper:
+    container_name: minima-zookeeper
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - kafka-net
+
+  kafka:
+    container_name: minima
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://minima:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      kafka-net:
+        aliases:
+          - kafka.local
+
+networks:
+  kafka-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16  # Fixed subnet for more predictable IP addressing
+  default:
+    driver: bridge
