@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: ./minimal-fe
+      dockerfile: Dockerfile.dev
+    ports:
+      - "88:3000"
+    volumes:
+      - ./minimal-fe:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
