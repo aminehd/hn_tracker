@@ -1,6 +1,6 @@
 
 
-A real-time analytics system that tracks and visualizes the most popular domains shared on Hacker News.
+A real-time analytics system that tracks and visualizes the websties shared on Hacker News by count.
 
 ## Overview
 
@@ -50,10 +50,6 @@ This command starts all necessary services:
 
 - `/api/top-domains` - Returns the most referenced domains and their counts
 - `/api/healthcheck` - Service health endpoint
-
-## Development
-
-To run individual components in development mode:
 
 
 
