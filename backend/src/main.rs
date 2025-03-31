@@ -363,7 +363,7 @@ async fn main() {
         interval.tick().await;
         info!("Fetching latest stories...");
         
-        match fetch_latest_stories(&client, 10).await {
+        match fetch_latest_stories(&client, 100).await {
             Ok(stories) => {
                 // Filter to only new stories
                 let new_stories: Vec<&Story> = stories.iter()
