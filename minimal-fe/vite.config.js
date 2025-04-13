@@ -19,7 +19,9 @@ export default defineConfig({
     },
     allowedHosts: [
       'hackernewsranked.com',
-      'www.hackernewsranked.com'
+      'www.hackernewsranked.com',
+      'aminehdadsetan.net',
+      'www.aminehdadsetan.net'
     ]
   }
 })
